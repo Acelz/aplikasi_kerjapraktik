@@ -1,11 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MdDashboard } from "react-icons/md";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getMe } from "../features/authSlice";
+import NotFound from "../pages/NotFound";
 
 const DefaultLayout = ({ children }) => {
   const [open, setOpen] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, isError } = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/");
+    }
+  }, [isError, navigate]);
+
+  if (!user) {
+    return <NotFound />;
+  }
   const Menus = [
     { title: "Dasbor", icon: <MdDashboard />, to: "/dashboard" },
     { title: "Data Kendaraan", icon: <MdDashboard />, to: "/vehicles" },
@@ -32,7 +52,7 @@ const DefaultLayout = ({ children }) => {
           onClick={() => setOpen(!open)}
         />
 
-        <div className="flex gap-x-4 items-center">
+        <div className="flex items-center gap-x-4">
           <h1
             className={` origin-left font-medium text-xl duration-200 ${
               !open && "scale-0"
@@ -59,8 +79,9 @@ const DefaultLayout = ({ children }) => {
           ))}
         </ul>
       </div>
-      <div className="h-screen flex-1 p-7">{children}</div>
+      <div className="flex-1 h-screen p-7">{children}</div>
     </div>
   );
 };
+
 export default DefaultLayout;
