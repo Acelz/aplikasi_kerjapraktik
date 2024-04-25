@@ -1,48 +1,49 @@
-import { HiOutlineXCircle } from "react-icons/hi2";
 import axios from "axios";
-import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import Spinner from "../spinner/Spinner";
+import { useState } from "react";
 
-const ModalDeleteCode = ({ setIsOpenModal, updateTable }) => {
-  const [divisions, setDivisons] = useState([]);
-  const [name, setName] = useState("");
-  const [divisionId, setDivisionId] = useState(1);
-
-  const fetchDivisions = async () => {
+const ModalDeleteCode = ({ setIsOpenModal, codeName, id, fetchCode }) => {
+  const [loading, setLoading] = useState(false);
+  const deleteCode = async (e) => {
+    e.preventDefault();
     try {
-      const response = await axios.get("http://localhost:5000/divisions");
-      console.log(response.data);
-      setDivisons(response.data.result);
+      setLoading(true);
+      const response = await axios.delete(
+        `http://localhost:5000/${codeName}/${id}`
+      );
+      setIsOpenModal(false);
+      fetchCode();
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
 
-  const addCode = async (e) => {
-    try {
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    fetchDivisions();
-  }, []);
   return (
     <>
-      <div className="fixed inset-0 z-index-top flex items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center z-index-top">
         <div className="fixed inset-0 bg-black opacity-50"></div>
         <div className="absolute flex flex-col">
           <div className="p-10 bg-white rounded-xl">
-            <h4 className="text-xl text-center font-semibold mb-4">
+            <h4 className="mb-4 text-xl font-semibold text-center">
               Hapus Kode
             </h4>
-            <p className="text-center font-medium text-lg">
+            <p className="text-lg font-medium text-center">
               Anda yakin ingin menghapus kode ini?
             </p>
-            <div className="mt-4 flex items-center place-items-center">
-              <button className="btn-primary w-full ">Ya</button>
+            <div className="flex items-center mt-4 place-items-center">
+              <button
+                disabled={loading}
+                className="w-full btn-primary"
+                onClick={deleteCode}
+              >
+                Ya
+              </button>
               <button
                 onClick={() => setIsOpenModal(false)}
-                className="btn-secondary w-full "
+                className="w-full btn-secondary "
               >
                 Tidak
               </button>
@@ -56,6 +57,9 @@ const ModalDeleteCode = ({ setIsOpenModal, updateTable }) => {
 
 ModalDeleteCode.propTypes = {
   setIsOpenModal: PropTypes.func.isRequired,
+  codeName: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  fetchCode: PropTypes.func.isRequired,
 };
 
 export default ModalDeleteCode;

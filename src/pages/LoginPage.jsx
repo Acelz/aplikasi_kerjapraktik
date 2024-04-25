@@ -25,6 +25,7 @@ const LoginPage = () => {
     e.preventDefault();
     dispatch(loginUser({ username, password }));
   };
+
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-300">
@@ -37,7 +38,7 @@ const LoginPage = () => {
               {message}
             </p>
           )}
-          <div className="w-full bg-white divide-y divide-gray-200 rounded-lg shadow">
+          <div className="w-full bg-white divide-y divide-gray-200 rounded-lg">
             <form onSubmit={Auth} className="px-5 py-7">
               <label className="block pb-1 text-sm font-semibold text-gray-600">
                 Nama Pengguna

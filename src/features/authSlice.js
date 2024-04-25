@@ -10,21 +10,19 @@ const initialState = {
 };
 
 export const loginUser = createAsyncThunk(
-  "user/LoginUser",
+  "user/loginUser",
   async (user, thunkAPI) => {
     try {
       const response = await axios.post("http://localhost:5000/login", {
         username: user.username,
         password: user.password,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
-      if (error.response) {
-        const message = error.response.data.message;
-        console.log(error.response);
-        return thunkAPI.rejectWithValue(message);
-      }
+      const message = error.response
+        ? error.response.data.message
+        : error.message || "An error occurred";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -34,52 +32,60 @@ export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
     const response = await axios.get("http://localhost:5000/me");
     return response.data;
   } catch (error) {
-    if (error.response) {
-      const message = error.response.data.msg;
-      return thunkAPI.rejectWithValue(message);
-    }
+    const message = error.response
+      ? error.response.data.msg
+      : error.message || "An error occurred";
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
-export const logout = createAsyncThunk("user/LogOut", async () => {
-  await axios.delete("http://localhost:5000/logout");
+export const logout = createAsyncThunk("user/logout", async (_, thunkAPI) => {
+  try {
+    await axios.delete("http://localhost:5000/logout");
+    return;
+  } catch (error) {
+    const message = error.message || "Failed to logout";
+    return thunkAPI.rejectWithValue(message);
+  }
 });
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: () => initialState,
   },
   extraReducers: (builder) => {
-    builder.addCase(loginUser.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(loginUser.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.isSuccess = true;
-      state.user = action.payload;
-    });
-    builder.addCase(loginUser.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload;
-    });
-
-    // Get User Login
-    builder.addCase(getMe.pending, (state) => {
-      state.isLoading = true;
-    });
-    builder.addCase(getMe.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.isSuccess = true;
-      state.user = action.payload;
-    });
-    builder.addCase(getMe.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload;
-    });
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(getMe.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(getMe.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        return initialState;
+      });
   },
 });
 

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 import NotFound from "../pages/NotFound";
+import propTypes from "prop-types";
 
 const DefaultLayout = ({ children }) => {
   const [open, setOpen] = useState(true);
@@ -14,18 +15,15 @@ const DefaultLayout = ({ children }) => {
   const { user, isError } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    console.log(user);
+    console.log(isError);
     dispatch(getMe());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (isError) {
-      navigate("/");
-    }
-  }, [isError, navigate]);
 
   if (!user) {
     return <NotFound />;
   }
+
   const Menus = [
     { title: "Dasbor", icon: <MdDashboard />, to: "/dashboard" },
     { title: "Data Kendaraan", icon: <MdDashboard />, to: "/vehicles" },
@@ -82,6 +80,10 @@ const DefaultLayout = ({ children }) => {
       <div className="flex-1 h-screen p-7">{children}</div>
     </div>
   );
+};
+
+DefaultLayout.propTypes = {
+  children: propTypes.node,
 };
 
 export default DefaultLayout;
