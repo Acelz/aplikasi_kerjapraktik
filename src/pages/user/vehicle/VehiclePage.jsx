@@ -1,16 +1,36 @@
 import DefaultLayout from "../../../layout/DefaultLayout";
+import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const VehiclePage = () => {
+  const [vehicles, setVehicles] = useState([]);
+
+  // const fetchVehicles = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:5000/vehicles");
+  //     setVehicles(response.data.result);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchVehicles();
+  // }, []);
   return (
     <DefaultLayout>
-      <div className="flex flex-wrap -mx-3 mb-5">
-        <div className="w-full max-w-full px-3 mb-6  mx-auto">
+      <div className="flex flex-wrap mb-5 -mx-3">
+        <div className="w-full max-w-full px-3 mx-auto mb-6">
           <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
             <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
               <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
                 <h3 className="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
                   Data Kendaraan
                 </h3>
+                <Link to="/vehicles/add" className="btn-primary">
+                  Tambah Kode Desa/Kelurahan
+                </Link>
               </div>
               <div className="flex-auto block py-8 pt-6 px-9">
                 <div className="overflow-x-auto">
@@ -20,44 +40,33 @@ const VehiclePage = () => {
                         <th className="pb-3 text-center ">No</th>
                         <th className="pb-3 text-center">Nomor Polisi</th>
                         <th className="pb-3 text-center">Nama Pemilik</th>
-                        <th className="pb-3  text-center">Alamat</th>
+                        <th className="pb-3 text-center">Alamat</th>
                         <th className="pb-3 text-center">Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-dashed last:border-b-0">
-                        <td className="p-3 text-center">1</td>
-                        <td className="p-3 text-center">DB 1207 DI</td>
-                        <td className="p-3 text-center">Marcellino</td>
-                        <td className="p-3 text-center">Jl. Kebonjati No. 1</td>
-                        <td className="p-3 flex justify-center">
-                          <p className="cursor-pointer w-max  hover:border-b-2 hover:border-gray-300">
-                            Detail
-                          </p>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-dashed last:border-b-0">
-                        <td className="p-3 text-center">2</td>
-                        <td className="p-3 text-center">DB 1207 DI</td>
-                        <td className="p-3 text-center">Marcellino</td>
-                        <td className="p-3 text-center">Jl. Kebonjati No. 1</td>
-                        <td className="p-3 flex justify-center">
-                          <p className="cursor-pointer w-max  hover:border-b-2 hover:border-gray-300">
-                            Detail
-                          </p>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-dashed last:border-b-0">
-                        <td className="p-3 text-center">3</td>
-                        <td className="p-3 text-center">DB 1207 DI</td>
-                        <td className="p-3 text-center">Marcellino</td>
-                        <td className="p-3 text-center">Jl. Kebonjati No. 1</td>
-                        <td className="p-3 flex justify-center">
-                          <p className="cursor-pointer w-max  hover:border-b-2 hover:border-gray-300">
-                            Detail
-                          </p>
-                        </td>
-                      </tr>
+                      {vehicles?.map((vehicle, index) => {
+                        return (
+                          <tr
+                            key={vehicle.uuid}
+                            className="border-b border-dashed last:border-b-0"
+                          >
+                            <td className="p-3 text-center">{index + 1}</td>
+                            <td className="p-3 text-center">
+                              {vehicle.licensePlate}
+                            </td>
+                            <td className="p-3 text-center">{vehicle.owner}</td>
+                            <td className="p-3 text-center">
+                              {vehicle.address}
+                            </td>
+                            <td className="flex justify-center p-3">
+                              <p className="cursor-pointer w-max hover:border-b-2 hover:border-gray-300">
+                                Detail
+                              </p>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

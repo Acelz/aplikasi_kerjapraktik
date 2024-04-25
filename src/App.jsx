@@ -8,6 +8,7 @@ import AddVehiclePage from "./pages/user/vehicle/AddVehiclePage";
 import DistrictPage from "./pages/admin/district/DistrictPage";
 import RegencyMunicipalityPage from "./pages/admin/regency-municipality/RegencyMunicipalityPage";
 import VillagePage from "./pages/admin/village/VillagePage";
+import DetailVechiclePage from "./pages/user/vehicle/DetailVechiclePage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/add" element={<AddUserPage />} />
         <Route path="/vehicles/add" element={<AddVehiclePage />} />
+        <Route path="/vehicle/:id" element={<DetailVechiclePage />} />
         <Route path="/vehicles" element={<VehiclePage />} />
         <Route path="/districts" element={<DistrictPage />} />
         <Route
