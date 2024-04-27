@@ -2,11 +2,13 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Spinner from "../spinner/Spinner";
+import FormInput from "../form/FormInput"; // Sesuaikan dengan path FormInput
 
 const ModalUpdateCode = ({ setIsOpenModal, codeName, id, fetchCode }) => {
-  const [number, setNumber] = useState(0);
+  const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const fetchDistrict = async () => {
     try {
@@ -23,7 +25,12 @@ const ModalUpdateCode = ({ setIsOpenModal, codeName, id, fetchCode }) => {
   const updateCode = async (e) => {
     e.preventDefault();
 
-    if (number === 0 || name === "") {
+    // Validasi input
+    if (!number || !name) {
+      setErrors({
+        number: !number ? "Nomor harus diisi" : null,
+        name: !name ? "Nama harus diisi" : null,
+      });
       return;
     }
 
@@ -47,69 +54,56 @@ const ModalUpdateCode = ({ setIsOpenModal, codeName, id, fetchCode }) => {
   }, [id]);
 
   return (
-    <>
-      <div className="fixed inset-0 flex items-center justify-center z-index-top">
-        <div className="fixed inset-0 bg-black opacity-50"></div>
-        <div className="absolute flex flex-col">
-          <div className="p-10 bg-white rounded-xl">
-            <h4 className="mb-4 text-xl font-semibold text-center">
-              Ubah Kode
-            </h4>
-            <form onSubmit={updateCode}>
-              <div>
-                <label
-                  htmlFor="district"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Kecamatan
-                </label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  type="text"
-                  id="ditrict"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Malalayang"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="code"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Kode
-                </label>
-                <input
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
-                  type="text"
-                  id="code"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="John"
-                  required
-                />
-              </div>
-              <div className="flex items-center mt-4 place-items-center">
-                <button
-                  type="submit"
-                  className="w-full btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? <Spinner /> : "Simpan"}
-                </button>
-                <button
-                  onClick={() => setIsOpenModal(false)}
-                  className="w-full btn-secondary "
-                >
-                  Batal
-                </button>
-              </div>
-            </form>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-index-top">
+      <div className="p-10 bg-white rounded-xl">
+        <h4 className="mb-4 text-xl font-semibold text-center">Ubah Kode</h4>
+        <form onSubmit={updateCode}>
+          <FormInput
+            label="Kecamatan"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setErrors({ ...errors, name: null });
+            }}
+            type="text"
+            placeholder="Malalayang"
+            error={errors.name}
+            required
+          />
+          {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+          <FormInput
+            label="Kode"
+            value={number}
+            onChange={(e) => {
+              setNumber(e.target.value);
+              setErrors({ ...errors, number: null });
+            }}
+            type="text"
+            placeholder="John"
+            error={errors.number}
+            required
+          />
+          {errors.number && (
+            <p className="text-sm text-red-500">{errors.number}</p>
+          )}
+          <div className="flex items-center mt-4">
+            <button
+              type="submit"
+              className="w-full btn-primary"
+              disabled={loading}
+            >
+              {loading ? <Spinner /> : "Simpan"}
+            </button>
+            <button
+              onClick={() => setIsOpenModal(false)}
+              className="w-full ml-2 btn-secondary"
+            >
+              Batal
+            </button>
           </div>
-        </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -31,7 +31,7 @@ const DashboardAdmin = () => {
               </span>
             </div>
             <h5 className="mt-4 text-xl font-medium text-gray-500 dark:text-gray-400">
-              Kode {item.name}
+              {item.name}
             </h5>
           </div>
         ))}

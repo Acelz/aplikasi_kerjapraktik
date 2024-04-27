@@ -39,16 +39,46 @@ const DefaultLayout = ({ children }) => {
   }
 
   const Menus = [
-    { title: "Dasbor", icon: <MdDashboard />, to: "/dashboard" },
-    { title: "Data Kendaraan", icon: <MdDashboard />, to: "/vehicles" },
     {
-      title: "Kode Kabupaten/Kota",
+      title: "Dasbor",
       icon: <MdDashboard />,
-      to: "/regency-municipalities",
+      to: "/dashboard",
+      isAdmin: false,
     },
-    { title: "Kode Kecamatan", icon: <MdDashboard />, to: "/districts" },
-    { title: "Kode Kelurahan/Desa", icon: <MdDashboard />, to: "/villages" },
-    { title: "Data Pengguna", icon: <MdDashboard />, to: "/users" },
+    {
+      title: "Data Kendaraan",
+      icon: <MdDashboard />,
+      to: "/vehicles",
+      isAdmin: false,
+    },
+    ...(user && user.role === "admin"
+      ? [
+          {
+            title: "Kode Kabupaten/Kota",
+            icon: <MdDashboard />,
+            to: "/regency-municipalities",
+            isAdmin: true,
+          },
+          {
+            title: "Kode Kecamatan",
+            icon: <MdDashboard />,
+            to: "/districts",
+            isAdmin: true,
+          },
+          {
+            title: "Kode Kelurahan/Desa",
+            icon: <MdDashboard />,
+            to: "/villages",
+            isAdmin: true,
+          },
+          {
+            title: "Data Pengguna",
+            icon: <MdDashboard />,
+            to: "/users",
+            isAdmin: true,
+          },
+        ]
+      : []),
   ];
 
   return (

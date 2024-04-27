@@ -6,30 +6,31 @@ import axios from "axios";
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
 
-  // const fetchVehicles = async () => {
-  //   try {
-  //     const response = await axios.get("http://localhost:5000/vehicles");
-  //     setVehicles(response.data.result);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
+  const fetchVehicles = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/vehicles");
+      setVehicles(response.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchVehicles();
-  // }, []);
+  useEffect(() => {
+    fetchVehicles();
+  }, []);
+
   return (
     <DefaultLayout>
       <div className="flex flex-wrap mb-5 -mx-3">
         <div className="w-full max-w-full px-3 mx-auto mb-6">
           <div className="relative flex-[1_auto] flex flex-col break-words min-w-0 bg-clip-border rounded-[.95rem] bg-white m-5">
-            <div className="relative flex flex-col min-w-0 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30">
+            <div className="relative flex flex-col min-w-0 break-words border border-solid bg-clip-border rounded-2xl border-stone-200 bg-light/30">
               <div className="px-9 pt-5 flex justify-between items-stretch flex-wrap min-h-[70px] pb-0 bg-transparent">
                 <h3 className="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
                   Data Kendaraan
                 </h3>
                 <Link to="/vehicles/add" className="btn-primary">
-                  Tambah Kode Desa/Kelurahan
+                  Tambah Kendaraan
                 </Link>
               </div>
               <div className="flex-auto block py-8 pt-6 px-9">
@@ -55,9 +56,11 @@ const VehiclePage = () => {
                             <td className="p-3 text-center">
                               {vehicle.licensePlate}
                             </td>
-                            <td className="p-3 text-center">{vehicle.owner}</td>
                             <td className="p-3 text-center">
-                              {vehicle.address}
+                              {vehicle.ownerName}
+                            </td>
+                            <td className="p-3 text-center">
+                              {vehicle.ownerAddress}
                             </td>
                             <td className="flex justify-center p-3">
                               <p className="cursor-pointer w-max hover:border-b-2 hover:border-gray-300">

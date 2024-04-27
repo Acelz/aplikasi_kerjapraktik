@@ -2,344 +2,249 @@ import DefaultLayout from "../../../layout/DefaultLayout";
 import Spinner from "../../../components/spinner/Spinner";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import FormInput from "../../../components/form/FormInput";
+import FormSelect from "../../../components/form/FormSelect";
 
 const AddVehiclePage = () => {
-  const [licensePlate, setLicensePlate] = useState("");
-  const [brand, setBrand] = useState("");
-  const [type, setType] = useState("");
-  const [yearMade, setYearMade] = useState("");
-  const [color, setColor] = useState("");
-  const [vehicleType, setVehicleType] = useState("");
-  const [model, setModel] = useState("");
-  const [cylinderCapacity, setCylinderCapacity] = useState("");
-  const [ownerName, setOwnerName] = useState("");
-  const [ownerAddress, setOwnerAddress] = useState("");
-  const [districtId, setDistrictId] = useState(null);
-  const [villageId, setVillageId] = useState(null);
-  const [regencyOrMunicipalityId, setRegencyOrMunicipalityId] = useState(null);
+  const [formData, setFormData] = useState({
+    licensePlate: "",
+    brand: "",
+    type: "",
+    yearMade: "",
+    color: "",
+    vehicleType: "",
+    model: "",
+    cylinderCapacity: "",
+    ownerName: "",
+    ownerAddress: "",
+    districtId: "",
+    villageId: "",
+    regencyOrMunicipalityId: "",
+  });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [villages, setVillages] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [regencyOrMunicipalities, setRegencyOrMunicipalities] = useState([]);
 
-  const addVehicle = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      axios.post("http://localhost:5000/vehicles", {
-        licensePlate: licensePlate,
-        brand: brand,
-        type: type,
-        yearMade: yearMade,
-        color: color,
-        vehicleType: vehicleType,
-        model: model,
-        cylinderCapacity: cylinderCapacity,
-        ownerName: ownerName,
-        ownerAddress: ownerAddress,
-        districtId: districtId,
-        villageId: villageId,
-        regencyOrMunicipalityId: regencyOrMunicipalityId,
-      });
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
-  const fetchVillages = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/villages/all`);
-      setVillages(response.data.result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchDistrict = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/districts/all`);
-      setDistricts(response.data.result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchRegencyOrMunicipality = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/regency-municipalities/all`
-      );
-      setRegencyOrMunicipalities(response.data.result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const navigate = useNavigate();
   useEffect(() => {
-    fetchVillages();
-    fetchDistrict();
-    fetchRegencyOrMunicipality();
+    const fetchLocations = async () => {
+      try {
+        const [villageData, districtData, regencyData] = await Promise.all([
+          axios.get("http://localhost:5000/villages/all"),
+          axios.get("http://localhost:5000/districts/all"),
+          axios.get("http://localhost:5000/regency-municipalities/all"),
+        ]);
+        setVillages(villageData.data.result);
+        setDistricts(districtData.data.result);
+        setRegencyOrMunicipalities(regencyData.data.result);
+      } catch (error) {
+        console.error("Failed to fetch location data", error);
+      }
+    };
+    fetchLocations();
   }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (!value) {
+      setErrors((prev) => ({ ...prev, [name]: "Field ini harus diisi" }));
+    } else {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const fieldsToValidate = [
+      "licensePlate",
+      "brand",
+      "type",
+      "yearMade",
+      "color",
+      "vehicleType",
+      "model",
+      "cylinderCapacity",
+      "ownerName",
+      "ownerAddress",
+      "villageId",
+      "districtId",
+      "regencyOrMunicipalityId",
+    ];
+    fieldsToValidate.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = "Field ini harus diisi";
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const addVehicle = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    setLoading(true);
+
+    try {
+      await axios.post("http://localhost:5000/vehicles", formData);
+      // Reset form or show success message
+
+      // Reset form
+      setFormData({
+        licensePlate: "",
+        brand: "",
+        type: "",
+        yearMade: "",
+        color: "",
+        vehicleType: "",
+        model: "",
+        cylinderCapacity: "",
+        ownerName: "",
+        ownerAddress: "",
+        districtId: "",
+        villageId: "",
+        regencyOrMunicipalityId: "",
+      });
+      setErrors({});
+      navigate("/vehicles");
+    } catch (error) {
+      console.error("Failed to add vehicle", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <DefaultLayout>
       <h1 className="mb-4 text-3xl">Tambah Kendaraan</h1>
-      <div>
-        <form onSubmit={addVehicle}>
-          <div className="grid grid-cols-2 gap-4 place-content-center">
-            <div>
-              <div>
-                <label
-                  htmlFor="licensePlate"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Nomor Plat
-                </label>
-                <input
-                  value={licensePlate}
-                  onChange={(e) => setLicensePlate(e.target.value)}
-                  type="text"
-                  id="licensePlate"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Nomor Plat"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="brand"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Merek
-                </label>
-                <input
-                  value={brand}
-                  onChange={(e) => setBrand(e.target.value)}
-                  type="text"
-                  id="brand"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Merek"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="type"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Tipe
-                </label>
-                <input
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  type="text"
-                  id="type"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Tipe"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="yearMade"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Tahun Dibuat
-                </label>
-                <input
-                  value={yearMade}
-                  onChange={(e) => setYearMade(e.target.value)}
-                  type="text"
-                  id="yearMade"
-                  className="input"
-                  placeholder="Tahun Dibuat"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="color"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Warna
-                </label>
-                <input
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  type="text"
-                  id="color"
-                  className="input"
-                  placeholder="Warna"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="vehicleType"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Jenis Kendaraan
-                </label>
-                <input
-                  value={vehicleType}
-                  onChange={(e) => setVehicleType(e.target.value)}
-                  type="text"
-                  id="vehicleType"
-                  className="input"
-                  placeholder="Jenis Kendaraan"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="model"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Model
-                </label>
-                <input
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  type="text"
-                  id="model"
-                  className="input"
-                  placeholder="Model"
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <div>
-                <label
-                  htmlFor="cylinderCapacity"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Kapasitas Silinder
-                </label>
-                <input
-                  value={cylinderCapacity}
-                  onChange={(e) => setCylinderCapacity(e.target.value)}
-                  type="text"
-                  id="cylinderCapacity"
-                  className="input"
-                  placeholder="Kapasitas Silinder"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="ownerName"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Nama Pemilik
-                </label>
-                <input
-                  value={ownerName}
-                  onChange={(e) => setOwnerName(e.target.value)}
-                  type="text"
-                  id="ownerName"
-                  className="input"
-                  placeholder="Nama Pemilik"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="ownerAddress"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Alamat Pemilik
-                </label>
-                <input
-                  value={ownerAddress}
-                  onChange={(e) => setOwnerAddress(e.target.value)}
-                  type="text"
-                  id="ownerAddress"
-                  className="input"
-                  placeholder="Alamat Pemilik"
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="village"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Keluraha/Desa
-                </label>
-                <select
-                  className="input"
-                  value={villageId}
-                  onChange={(e) => setVillageId(e.target.value)}
-                  name="village"
-                  id="village"
-                >
-                  {villages.map((village) => (
-                    <option value={village.id} key={village.id}>
-                      {village.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label
-                  htmlFor="district"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Kecamatan
-                </label>
-                <select
-                  className="input"
-                  value={districtId}
-                  onChange={(e) => setDistrictId(e.target.value)}
-                  name="district"
-                  id="district"
-                >
-                  {districts.map((district) => (
-                    <option value={district.id} key={district.id}>
-                      {district.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      <form onSubmit={addVehicle}>
+        <div className="grid grid-cols-2 gap-4 place-content-center">
+          <div>
+            <FormInput
+              label="Nomor Plat"
+              value={formData.licensePlate}
+              onChange={handleInputChange}
+              name="licensePlate"
+              placeholder="Nomor Plat"
+              error={errors.licensePlate}
+            />
 
-              <div>
-                <label
-                  htmlFor="regencyOrMunicipalities"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Provinsi
-                </label>
-                <select
-                  className="input"
-                  value={regencyOrMunicipalityId}
-                  onChange={(e) => setRegencyOrMunicipalityId(e.target.value)}
-                  name="regencyOrMunicipalities"
-                  id="regencyOrMunicipalities"
-                >
-                  {regencyOrMunicipalities.map((item) => (
-                    <option value={item.id} key={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <FormInput
+              label="Merek"
+              value={formData.brand}
+              onChange={handleInputChange}
+              name="brand"
+              placeholder="Merek"
+              error={errors.brand}
+            />
+            <FormInput
+              label="Tipe"
+              value={formData.type}
+              onChange={handleInputChange}
+              name="type"
+              placeholder="Tipe"
+              error={errors.type}
+            />
+            <FormInput
+              label="Tahun Dibuat"
+              value={formData.yearMade}
+              onChange={handleInputChange}
+              name="yearMade"
+              placeholder="Tahun Dibuat"
+              error={errors.yearMade}
+            />
+            <FormInput
+              label="Warna"
+              value={formData.color}
+              onChange={handleInputChange}
+              name="color"
+              placeholder="Warna"
+              error={errors.color}
+            />
+            <FormInput
+              label="Jenis Kendaraan"
+              value={formData.vehicleType}
+              onChange={handleInputChange}
+              name="vehicleType"
+              placeholder="Jenis Kendaraan"
+              error={errors.vehicleType}
+            />
+            <FormInput
+              label="Model"
+              value={formData.model}
+              onChange={handleInputChange}
+              name="model"
+              placeholder="Model"
+              error={errors.model}
+            />
           </div>
-          <div className="flex items-center mt-4 place-items-center">
-            {loading ? (
-              <button className="w-full btn-primary" disabled>
-                <Spinner />
-                Menyimpan...
-              </button>
-            ) : (
-              <button type="submit" className="w-full btn-primary">
-                Simpan
-              </button>
-            )}
+          <div>
+            <FormInput
+              label="Kapasitas Silinder"
+              value={formData.cylinderCapacity}
+              onChange={handleInputChange}
+              name="cylinderCapacity"
+              placeholder="Kapasitas Silinder"
+              error={errors.cylinderCapacity}
+            />
+            <FormInput
+              label="Nama Pemilik"
+              value={formData.ownerName}
+              onChange={handleInputChange}
+              name="ownerName"
+              placeholder="Nama Pemilik"
+              error={errors.ownerName}
+            />
+            <FormInput
+              label="Alamat Pemilik"
+              value={formData.ownerAddress}
+              onChange={handleInputChange}
+              name="ownerAddress"
+              placeholder="Alamat Pemilik"
+              error={errors.ownerAddress}
+            />
+            <FormSelect
+              label="Kelurahan/Desa"
+              options={villages}
+              value={formData.villageId}
+              onChange={handleInputChange}
+              name="villageId"
+              error={errors.villageId}
+            />
+            <FormSelect
+              label="Kecamatan"
+              options={districts}
+              value={formData.districtId}
+              onChange={handleInputChange}
+              name="districtId"
+              error={errors.districtId}
+            />
+            <FormSelect
+              label="Provinsi"
+              options={regencyOrMunicipalities}
+              value={formData.regencyOrMunicipalityId}
+              onChange={handleInputChange}
+              name="regencyOrMunicipalityId"
+              error={errors.regencyOrMunicipalityId}
+            />
           </div>
-        </form>
-      </div>
+        </div>
+        <div className="flex items-center mt-4 place-items-center">
+          <button
+            type="submit"
+            className="w-full btn-primary"
+            disabled={loading}
+          >
+            {loading ? <Spinner /> : "Simpan"}
+          </button>
+        </div>
+      </form>
     </DefaultLayout>
   );
 };
