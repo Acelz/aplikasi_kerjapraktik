@@ -1,21 +1,21 @@
 import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import DashboardAdmin from "./pages/admin/dashboard/DashboardAdmin";
-import AddUserPage from "./pages/admin/users/AddUserPage";
-import UsersPage from "./pages/admin/users/UsersPage";
+import AddUserPage from "./pages/superadmin/users/AddUserPage";
+import UsersPage from "./pages/superadmin/users/UsersPage";
 import VehiclePage from "./pages/user/vehicle/VehiclePage";
 import AddVehiclePage from "./pages/user/vehicle/AddVehiclePage";
 import DistrictPage from "./pages/admin/district/DistrictPage";
 import RegencyMunicipalityPage from "./pages/admin/regency-municipality/RegencyMunicipalityPage";
 import VillagePage from "./pages/admin/village/VillagePage";
 import DetailVechiclePage from "./pages/user/vehicle/DetailVechiclePage";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<DashboardAdmin />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/add" element={<AddUserPage />} />
         <Route path="/vehicles/add" element={<AddVehiclePage />} />

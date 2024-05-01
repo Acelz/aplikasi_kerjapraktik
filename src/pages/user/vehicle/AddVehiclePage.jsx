@@ -18,9 +18,9 @@ const AddVehiclePage = () => {
     cylinderCapacity: "",
     ownerName: "",
     ownerAddress: "",
-    districtId: "",
-    villageId: "",
-    regencyOrMunicipalityId: "",
+    districtId: null,
+    villageId: null,
+    regencyOrMunicipalityId: null,
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -70,9 +70,6 @@ const AddVehiclePage = () => {
       "cylinderCapacity",
       "ownerName",
       "ownerAddress",
-      "villageId",
-      "districtId",
-      "regencyOrMunicipalityId",
     ];
     fieldsToValidate.forEach((field) => {
       if (!formData[field]) {

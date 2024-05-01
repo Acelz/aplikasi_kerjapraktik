@@ -13,7 +13,7 @@ const DefaultLayout = ({ children }) => {
   const [open, setOpen] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, isError } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const [isModalLogout, setIsModalLogout] = useState(false);
 
@@ -38,48 +38,75 @@ const DefaultLayout = ({ children }) => {
     return <NotFound />;
   }
 
-  const Menus = [
+  let menu;
+
+  const menuAdmin = [
     {
       title: "Dasbor",
       icon: <MdDashboard />,
       to: "/dashboard",
-      isAdmin: false,
+    },
+    {
+      title: "Kode Kabupaten/Kota",
+      icon: <MdDashboard />,
+      to: "/regency-municipalities",
+    },
+    {
+      title: "Kode Kecamatan",
+      icon: <MdDashboard />,
+      to: "/districts",
+    },
+    {
+      title: "Kode Kelurahan/Desa",
+      icon: <MdDashboard />,
+      to: "/villages",
+    },
+  ];
+
+  const menuSuperadmin = [
+    {
+      title: "Dasbor",
+      icon: <MdDashboard />,
+      to: "/dashboard",
+    },
+    {
+      title: "Data Pengguna",
+      icon: <MdDashboard />,
+      to: "/users",
+      isAdmin: true,
     },
     {
       title: "Data Kendaraan",
       icon: <MdDashboard />,
       to: "/vehicles",
-      isAdmin: false,
+      isAdmin: true,
     },
-    ...(user && user.role === "admin"
-      ? [
-          {
-            title: "Kode Kabupaten/Kota",
-            icon: <MdDashboard />,
-            to: "/regency-municipalities",
-            isAdmin: true,
-          },
-          {
-            title: "Kode Kecamatan",
-            icon: <MdDashboard />,
-            to: "/districts",
-            isAdmin: true,
-          },
-          {
-            title: "Kode Kelurahan/Desa",
-            icon: <MdDashboard />,
-            to: "/villages",
-            isAdmin: true,
-          },
-          {
-            title: "Data Pengguna",
-            icon: <MdDashboard />,
-            to: "/users",
-            isAdmin: true,
-          },
-        ]
-      : []),
   ];
+
+  const menuUser = [
+    {
+      title: "Dasbor",
+      icon: <MdDashboard />,
+      to: "/dashboard",
+    },
+    {
+      title: "Data Kendaraan",
+      icon: <MdDashboard />,
+      to: "/vehicles",
+    },
+  ];
+
+  switch (user && user?.role) {
+    case "admin":
+      menu = menuAdmin;
+      break;
+    case "superadmin":
+      menu = menuSuperadmin;
+      break;
+    default:
+      menu = menuUser;
+      break;
+  }
 
   return (
     <>
@@ -103,7 +130,7 @@ const DefaultLayout = ({ children }) => {
             ></h1>
           </div>
           <ul className="pt-6">
-            {Menus.map((Menu, index) => (
+            {menu.map((Menu, index) => (
               <Link
                 to={Menu?.to}
                 key={index}

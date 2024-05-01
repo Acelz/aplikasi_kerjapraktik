@@ -2,9 +2,14 @@ import DefaultLayout from "../../../layout/DefaultLayout";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { getMe } from "../../../features/authSlice";
 
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
+  const { user } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
 
   const fetchVehicles = async () => {
     try {
@@ -14,6 +19,10 @@ const VehiclePage = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
 
   useEffect(() => {
     fetchVehicles();
@@ -29,9 +38,13 @@ const VehiclePage = () => {
                 <h3 className="flex flex-col items-start justify-center m-2 ml-0 font-medium text-xl/tight text-dark">
                   Data Kendaraan
                 </h3>
-                <Link to="/vehicles/add" className="btn-primary">
-                  Tambah Kendaraan
-                </Link>
+                {user && user.role === "user" ? (
+                  <Link to="/vehicles/add" className="btn-primary">
+                    Tambah Kendaraan
+                  </Link>
+                ) : (
+                  <button className="btn-primary">Ekspor Data Kendaraan</button>
+                )}
               </div>
               <div className="flex-auto block py-8 pt-6 px-9">
                 <div className="overflow-x-auto">

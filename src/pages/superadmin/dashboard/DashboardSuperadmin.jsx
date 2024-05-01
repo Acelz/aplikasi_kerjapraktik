@@ -2,7 +2,7 @@ import DefaultLayout from "../../../layout/DefaultLayout";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const DashboardAdmin = () => {
+const DashboardSuperadmin = () => {
   const [data, setData] = useState(null);
   const fetch = async () => {
     try {
@@ -10,10 +10,7 @@ const DashboardAdmin = () => {
       const data = response.data.result;
       console.log(data);
       const dataFiltered = data.filter(
-        (item) =>
-          item.name === "Kode Kelurahan/Desa" ||
-          item.name === "Kode Kecamatan" ||
-          item.name === "Kode Kabupaten/Kota"
+        (item) => item.name === "Kendaraan" || item.name === "Pengguna"
       );
       setData(dataFiltered);
     } catch (error) {
@@ -48,4 +45,4 @@ const DashboardAdmin = () => {
   );
 };
 
-export default DashboardAdmin;
+export default DashboardSuperadmin;

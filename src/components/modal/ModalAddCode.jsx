@@ -12,6 +12,22 @@ const ModalAddCode = ({ setIsOpenModal, codeName, fetchCode }) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  let name;
+
+  switch (codeName) {
+    case "district":
+      name = "Kecamatan";
+      break;
+    case "village":
+      name = "Kelurahan/Desa";
+      break;
+    case "regency-municipalities":
+      name = "Kabupaten/Kota";
+      break;
+    default:
+      name = null;
+      break;
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -56,12 +72,12 @@ const ModalAddCode = ({ setIsOpenModal, codeName, fetchCode }) => {
         <h4 className="mb-4 text-xl font-semibold text-center">Tambah Kode</h4>
         <form onSubmit={addCode}>
           <FormInput
-            label="Kecamatan"
+            label={name}
             value={formData.name}
             onChange={handleChange}
             name="name"
             type="text"
-            placeholder="Malalayang"
+            placeholder={`${name}`}
             error={errors.name}
             required
           />
@@ -70,8 +86,10 @@ const ModalAddCode = ({ setIsOpenModal, codeName, fetchCode }) => {
             value={formData.number}
             onChange={handleChange}
             name="number"
-            type="text"
-            placeholder="John"
+            type="number"
+            placeholder="1"
+            min="1"
+            max="9999"
             error={errors.number}
             required
           />

@@ -53,7 +53,7 @@ const LoginPage = () => {
                 Kata Sandi
               </label>
               <input
-                type="text"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 mt-1 mb-5 text-sm border rounded-lg"
