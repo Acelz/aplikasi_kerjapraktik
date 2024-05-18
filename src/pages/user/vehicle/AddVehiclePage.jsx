@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import FormInput from "../../../components/form/FormInput";
-import FormSelect from "../../../components/form/FormSelect";
 
 const AddVehiclePage = () => {
   const [formData, setFormData] = useState({
@@ -18,9 +17,9 @@ const AddVehiclePage = () => {
     cylinderCapacity: "",
     ownerName: "",
     ownerAddress: "",
-    districtId: null,
-    villageId: null,
-    regencyOrMunicipalityId: null,
+    districtId: 1,
+    villageId: 1,
+    regencyOrMunicipalityId: 1,
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -90,9 +89,7 @@ const AddVehiclePage = () => {
 
     try {
       await axios.post("http://localhost:5000/vehicles", formData);
-      // Reset form or show success message
 
-      // Reset form
       setFormData({
         licensePlate: "",
         brand: "",
@@ -206,30 +203,70 @@ const AddVehiclePage = () => {
               placeholder="Alamat Pemilik"
               error={errors.ownerAddress}
             />
-            <FormSelect
-              label="Kelurahan/Desa"
-              options={villages}
-              value={formData.villageId}
-              onChange={handleInputChange}
-              name="villageId"
-              error={errors.villageId}
-            />
-            <FormSelect
-              label="Kecamatan"
-              options={districts}
-              value={formData.districtId}
-              onChange={handleInputChange}
-              name="districtId"
-              error={errors.districtId}
-            />
-            <FormSelect
-              label="Provinsi"
-              options={regencyOrMunicipalities}
-              value={formData.regencyOrMunicipalityId}
-              onChange={handleInputChange}
-              name="regencyOrMunicipalityId"
-              error={errors.regencyOrMunicipalityId}
-            />
+            <div>
+              <label
+                htmlFor="role"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Kelurahan
+              </label>
+              <select
+                value={formData.villageId}
+                onChange={handleInputChange}
+                name="villageId"
+                id="villageId"
+                className={`input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              >
+                {villages.map((option) => (
+                  <option key={option.value} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="role"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Kecamatan
+              </label>
+              <select
+                value={formData.districtId}
+                onChange={handleInputChange}
+                name="districtId"
+                className={`input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              >
+                {districts.map((option) => (
+                  <option key={option.value} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="role"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Kabupaten / Kota
+              </label>
+              <select
+                value={formData.regencyOrMunicipalityId}
+                onChange={handleInputChange}
+                name="regencyOrMunicipalityId"
+                id="regencyOrMunicipalityId"
+                className={`input bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white`}
+              >
+                {regencyOrMunicipalities.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
         <div className="flex items-center mt-4 place-items-center">

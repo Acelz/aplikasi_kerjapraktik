@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getMe } from "../../../features/authSlice";
+import * as XLSX from "xlsx"; // Import the XLSX library
 
 const VehiclePage = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -28,6 +29,13 @@ const VehiclePage = () => {
     fetchVehicles();
   }, []);
 
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(vehicles);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Vehicles");
+    XLSX.writeFile(wb, "vehicles.xlsx");
+  };
+
   return (
     <DefaultLayout>
       <div className="flex flex-wrap mb-5 -mx-3">
@@ -43,7 +51,9 @@ const VehiclePage = () => {
                     Tambah Kendaraan
                   </Link>
                 ) : (
-                  <button className="btn-primary">Ekspor Data Kendaraan</button>
+                  <button onClick={exportToExcel} className="btn-primary">
+                    Ekspor Data Kendaraan
+                  </button>
                 )}
               </div>
               <div className="flex-auto block py-8 pt-6 px-9">
